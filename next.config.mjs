@@ -7,8 +7,8 @@ const nextConfig = {
         destination: '/admin',
         permanent: false,
       },
-    ];
+    ]
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig
