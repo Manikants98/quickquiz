@@ -1,11 +1,12 @@
 'use client'
-import { Add, Close, Delete, Edit } from '@mui/icons-material'
+import { Add, Close, Delete, Edit, Visibility } from '@mui/icons-material'
 import {
   Button,
   Dialog,
   Divider,
   IconButton,
   MenuItem,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -26,10 +27,10 @@ interface Answer {
 
 interface Quiz {
   _id?: string
-  text: string // The quiz prompt
+  text: string
   answers: Answer[]
-  subjectId: { _id: string } // Added for subject selection
-  competitionId: { _id: string } // Added for competition selection
+  subjectId: { _id: string }
+  competitionId: { _id: string }
 }
 
 const QuizPage: React.FC = () => {
@@ -37,12 +38,15 @@ const QuizPage: React.FC = () => {
   const [subjects, setSubjects] = useState<
     { _id: string; name: string; competition: { _id: string } }[]
   >([])
-  const [filteredSubjects, setFilteredSubjects] = useState<{ _id: string; name: string }[]>([]) // For filtering subjects
+  const [filteredSubjects, setFilteredSubjects] = useState<{ _id: string; name: string }[]>([])
   const [competitions, setCompetitions] = useState<{ _id: string; name: string }[]>([])
+  const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState(false)
   const [isEdit, setIsEdit] = useState(false)
   const [currentQuizId, setCurrentQuizId] = useState<string | null>(null)
-  const [selectedCompetition, setSelectedCompetition] = useState<string>('') // Track selected competition
+  const [selectedCompetition, setSelectedCompetition] = useState<string>('')
+  const [answersDialogOpen, setAnswersDialogOpen] = useState(false)
+  const [selectedAnswers, setSelectedAnswers] = useState<Answer[]>([])
 
   const handleClose = () => {
     setOpen(false)
@@ -51,17 +55,18 @@ const QuizPage: React.FC = () => {
   }
 
   const fetchQuizzes = async () => {
-    const res = await axios.get('/api/quiz') // Adjust API endpoint accordingly
+    const res = await axios.get('/api/quiz')
     setQuizzes(res.data)
+    setLoading(false)
   }
 
   const fetchSubjects = async () => {
-    const res = await axios.get('/api/subject') // Adjust API endpoint accordingly
+    const res = await axios.get('/api/subject')
     setSubjects(res.data)
   }
 
   const fetchCompetitions = async () => {
-    const res = await axios.get('/api/competition') // Adjust API endpoint accordingly
+    const res = await axios.get('/api/competition')
     setCompetitions(res.data)
   }
 
@@ -72,7 +77,6 @@ const QuizPage: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    // Filter subjects based on the selected competition
     if (selectedCompetition) {
       const filtered = subjects.filter(
         (subject) => subject.competition?._id === selectedCompetition
@@ -101,6 +105,11 @@ const QuizPage: React.FC = () => {
     fetchQuizzes()
   }
 
+  const handleViewAnswers = (answers: Answer[]) => {
+    setSelectedAnswers(answers)
+    setAnswersDialogOpen(true)
+  }
+
   const formik = useFormik({
     initialValues: {
       text: '',
@@ -125,9 +134,6 @@ const QuizPage: React.FC = () => {
     },
   })
 
-  console.log(selectedCompetition, 'mkx')
-  console.log(competitions, 'mkx')
-
   return (
     <div className="w-full">
       <div className="flex justify-between items-center p-3">
@@ -150,25 +156,88 @@ const QuizPage: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {quizzes.map((quiz) => (
-              <TableRow key={quiz._id}>
-                <TableCell className="!py-2">{quiz.text}</TableCell>
-                <TableCell className="!py-2">
-                  <div className="flex justify-center gap-1 items-center">
-                    <IconButton color="success" onClick={() => handleEdit(quiz)}>
-                      <Edit />
-                    </IconButton>
-                    <IconButton color="error" onClick={() => handleDelete(quiz._id!)}>
-                      <Delete />
-                    </IconButton>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+            {loading ? (
+              // Skeleton Loader
+              <>
+                {[1, 2, 3].map((_, idx) => (
+                  <TableRow key={idx}>
+                    <TableCell>
+                      <Skeleton variant="text" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex justify-center gap-1 items-center">
+                        <Skeleton variant="circular" width={40} height={40} />
+                        <Skeleton variant="circular" width={40} height={40} />
+                        <Skeleton variant="circular" width={40} height={40} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </>
+            ) : (
+              quizzes.map((quiz) => (
+                <TableRow key={quiz._id}>
+                  <TableCell className="!py-2">{quiz.text}</TableCell>
+                  <TableCell className="!py-2">
+                    <div className="flex justify-center gap-1 items-center">
+                      <IconButton
+                        className="!bg-red-100"
+                        color="success"
+                        onClick={() => handleEdit(quiz)}
+                      >
+                        <Edit />
+                      </IconButton>
+                      <IconButton
+                        className="!bg-red-100"
+                        color="error"
+                        onClick={() => handleDelete(quiz._id!)}
+                      >
+                        <Delete />
+                      </IconButton>
+                      <IconButton
+                        className="!bg-red-100"
+                        color="primary"
+                        onClick={() => handleViewAnswers(quiz.answers)}
+                      >
+                        <Visibility />
+                      </IconButton>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>
 
+      {/* Answers Dialog */}
+      <Dialog
+        open={answersDialogOpen}
+        onClose={() => setAnswersDialogOpen(false)}
+        className="flex flex-col"
+        PaperProps={{ className: 'w-96' }}
+      >
+        <div className="p-4">
+          <h2 className="text-lg font-semibold">Quiz Answers</h2>
+          <Divider className="my-2" />
+          {selectedAnswers.map((answer, idx) => (
+            <div
+              key={answer.id}
+              className={`my-2 p-2 ${answer.isCorrect ? 'bg-green-100' : 'bg-red-100'}`}
+            >
+              <span className="font-semibold">{`Answer ${idx + 1}:`}</span> {answer.text}
+              {answer.isCorrect && <span className="ml-2 text-green-700">(Correct)</span>}
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-end p-2">
+          <Button onClick={() => setAnswersDialogOpen(false)} variant="contained">
+            Close
+          </Button>
+        </div>
+      </Dialog>
+
+      {/* Create/Edit Quiz Dialog */}
       <Dialog open={open} className="flex flex-col" PaperProps={{ className: 'w-96' }}>
         <form onSubmit={formik.handleSubmit}>
           <div className="flex items-center justify-between p-2">

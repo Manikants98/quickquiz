@@ -6,6 +6,7 @@ import {
   Divider,
   IconButton,
   MenuItem,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -18,62 +19,28 @@ import axios from 'axios'
 import { useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 
-interface Competition {
+interface Subject {
   _id?: string
   name: string
-  date: string
-  location: string
-  status: string
+  competition: { _id: string }
 }
 
-const indianStates = [
-  'Andhra Pradesh',
-  'Arunachal Pradesh',
-  'Assam',
-  'Bihar',
-  'Chhattisgarh',
-  'Goa',
-  'Gujarat',
-  'Haryana',
-  'Himachal Pradesh',
-  'Jharkhand',
-  'Karnataka',
-  'Kerala',
-  'Madhya Pradesh',
-  'Maharashtra',
-  'Manipur',
-  'Meghalaya',
-  'Mizoram',
-  'Nagaland',
-  'Odisha',
-  'Punjab',
-  'Rajasthan',
-  'Sikkim',
-  'Tamil Nadu',
-  'Telangana',
-  'Tripura',
-  'Uttar Pradesh',
-  'Uttarakhand',
-  'West Bengal',
-  'Andaman and Nicobar Islands',
-  'Chandigarh',
-  'Dadra and Nagar Haveli',
-  'Daman and Diu',
-  'Lakshadweep',
-  'Delhi',
-  'Puducherry',
-]
-
-const CompetitionPage: React.FC = () => {
-  const [competitions, setCompetitions] = useState<Competition[]>([])
+const SubjectPage: React.FC = () => {
+  const [subjects, setSubjects] = useState<Subject[]>([])
+  const [competitions, setCompetitions] = useState<{ _id: string; name: string }[]>([])
+  const [loading, setLoading] = useState(true) // Add loading state
   const [open, setOpen] = useState(false)
   const [isEdit, setIsEdit] = useState(false)
-  const [currentCompetitionId, setCurrentCompetitionId] = useState<string | null>(null)
+  const [currentSubjectId, setCurrentSubjectId] = useState<string | null>(null)
 
-  const handleClose = () => {
-    setOpen(false)
-    setIsEdit(false)
-    formik.resetForm()
+  const fetchSubjects = async () => {
+    setLoading(true) // Set loading to true before fetching data
+    try {
+      const res = await axios.get('/api/subject')
+      setSubjects(res.data)
+    } finally {
+      setLoading(false) // Set loading to false after fetching data
+    }
   }
 
   const fetchCompetitions = async () => {
@@ -82,48 +49,48 @@ const CompetitionPage: React.FC = () => {
   }
 
   useEffect(() => {
+    fetchSubjects()
     fetchCompetitions()
   }, [])
 
-  const handleEdit = (competition: Competition) => {
+  const formik = useFormik({
+    initialValues: { name: '', competition: '' },
+    onSubmit: async (values) => {
+      if (isEdit && currentSubjectId) {
+        await axios.put(`/api/subject/${currentSubjectId}`, values)
+      } else {
+        await axios.post('/api/subject', values)
+      }
+      fetchSubjects()
+      handleClose()
+    },
+  })
+
+  const handleEdit = (subject: Subject) => {
     setIsEdit(true)
-    setCurrentCompetitionId(competition._id || null)
+    setCurrentSubjectId(subject._id || null)
     formik.setValues({
-      name: competition.name,
-      date: competition.date,
-      location: competition.location,
-      status: 'Active',
+      name: subject.name,
+      competition: subject.competition?._id,
     })
     setOpen(true)
   }
 
   const handleDelete = async (id: string) => {
-    await axios.delete(`/api/competition/${id}`)
-    fetchCompetitions()
+    await axios.delete(`/api/subject/${id}`)
+    fetchSubjects()
   }
 
-  const formik = useFormik({
-    initialValues: {
-      name: '',
-      date: '',
-      location: '',
-      status: 'Active',
-    },
-    onSubmit: async (values) => {
-      if (isEdit && currentCompetitionId) {
-        await axios.put(`/api/competition/${currentCompetitionId}`, values)
-      } else {
-        await axios.post('/api/competition', values)
-      }
-      fetchCompetitions()
-      handleClose()
-    },
-  })
+  const handleClose = () => {
+    setOpen(false)
+    setIsEdit(false)
+    formik.resetForm()
+  }
 
   return (
     <div className="w-full">
       <div className="flex justify-between items-center p-3">
-        <h1 className="text-xl font-semibold">Competitions</h1>
+        <h1 className="text-xl font-semibold">Subjects</h1>
         <Button
           variant="contained"
           disableElevation
@@ -138,48 +105,62 @@ const CompetitionPage: React.FC = () => {
           <TableHead>
             <TableRow className="!bg-red-100">
               <TableCell className="!font-bold">Name</TableCell>
-              <TableCell className="!font-bold">Date</TableCell>
-              <TableCell className="!font-bold">Location</TableCell>
-              <TableCell className="!font-bold">Status</TableCell>
+              <TableCell className="!font-bold">Competition</TableCell>
               <TableCell className="!font-bold !text-center">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {competitions.map((competition) => (
-              <TableRow key={competition._id}>
-                <TableCell className="!py-2">{competition.name}</TableCell>
-                <TableCell className="!py-2">{competition.date}</TableCell>
-                <TableCell className="!py-2">{competition.location}</TableCell>
-                <TableCell className="!py-2">{competition.status}</TableCell>
-                <TableCell className="!py-2">
-                  <div className="flex justify-center gap-1 items-center">
-                    <IconButton
-                      className="!bg-red-100"
-                      color="success"
-                      onClick={() => handleEdit(competition)}
-                    >
-                      <Edit />
-                    </IconButton>
-                    <IconButton
-                      className="!bg-red-100"
-                      color="error"
-                      onClick={() => handleDelete(competition._id!)}
-                    >
-                      <Delete />
-                    </IconButton>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+            {loading
+              ? Array.from(new Array(5)).map((_, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="!py-2">
+                      <Skeleton variant="text" />
+                    </TableCell>
+                    <TableCell className="!py-2">
+                      <Skeleton variant="text" />
+                    </TableCell>
+                    <TableCell className="!py-2">
+                      <div className="flex items-center justify-center gap-2">
+                        <Skeleton variant="circular" width={40} height={40} />
+                        <Skeleton variant="circular" width={40} height={40} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              : subjects.map((subject) => (
+                  <TableRow key={subject._id}>
+                    <TableCell className="!py-2">{subject.name}</TableCell>
+                    <TableCell className="!py-2">
+                      {competitions.find((c) => c._id === subject.competition._id)?.name ||
+                        'Unknown'}
+                    </TableCell>
+                    <TableCell className="!py-2">
+                      <div className="flex justify-center gap-1 items-center">
+                        <IconButton
+                          className="!bg-red-100"
+                          color="success"
+                          onClick={() => handleEdit(subject)}
+                        >
+                          <Edit />
+                        </IconButton>
+                        <IconButton
+                          className="!bg-red-100"
+                          color="error"
+                          onClick={() => handleDelete(subject._id!)}
+                        >
+                          <Delete />
+                        </IconButton>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
           </TableBody>
         </Table>
       </TableContainer>
-
-      {/* Dialog for Adding/Editing Competition */}
       <Dialog open={open} className="flex flex-col" PaperProps={{ className: 'w-96' }}>
         <form onSubmit={formik.handleSubmit}>
           <div className="flex items-center justify-between p-2">
-            <p>{isEdit ? 'Edit Competition' : 'New Competition'}</p>
+            <p>{isEdit ? 'Edit Subject' : 'New Subject'}</p>
             <IconButton onClick={handleClose}>
               <Close />
             </IconButton>
@@ -194,24 +175,16 @@ const CompetitionPage: React.FC = () => {
               value={formik.values.name}
             />
             <TextField
-              inputProps={{ className: 'uppercase' }}
               size="small"
-              type="date"
-              onChange={formik.handleChange}
-              name="date"
-              value={formik.values.date}
-            />
-            <TextField
-              size="small"
-              label="Location"
+              label="Competition"
               select
               onChange={formik.handleChange}
-              name="location"
-              value={formik.values.location}
+              name="competition"
+              value={formik.values.competition}
             >
-              {indianStates.map((state, index) => (
-                <MenuItem key={index} value={state}>
-                  {state}
+              {competitions.map((competition) => (
+                <MenuItem key={competition._id} value={competition._id}>
+                  {competition.name}
                 </MenuItem>
               ))}
             </TextField>
@@ -237,4 +210,4 @@ const CompetitionPage: React.FC = () => {
   )
 }
 
-export default CompetitionPage
+export default SubjectPage
