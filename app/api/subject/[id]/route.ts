@@ -25,7 +25,7 @@ export async function DELETE(_req: Request, { params }: { params: { id: string }
             return NextResponse.json({ message: 'Subject not found' }, { status: 404 });
         }
         return NextResponse.json({ message: 'Subject deleted successfully' });
-    } catch (error: any) {
-        return NextResponse.json({ message: 'Error deleting subject', error: error.message || error }, { status: 400 });
+    } catch (error) {
+        return NextResponse.json({ message: 'Error deleting subject', error: error }, { status: 400 });
     }
 }
