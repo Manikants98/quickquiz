@@ -2,9 +2,13 @@
 const nextConfig = {
   async redirects() {
     return [
-      { source: '/',  destination: '/admin',  permanent: true},
+      {
+        source: '/',
+        destination: '/admin',
+        permanent: false,
+      },
     ];
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
