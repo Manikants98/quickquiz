@@ -3,7 +3,7 @@ import Quiz from '@/Models/Quiz';
 import dbConnect from '@/utils/mongoose';
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request) {
+export async function GET() {
     try {
         await dbConnect();
         const quizzes = await Quiz.find().populate('subjectId competitionId');
