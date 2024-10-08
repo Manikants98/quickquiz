@@ -1,19 +1,72 @@
+'use client'
+import { BarChart, LineChart } from '@mui/x-charts'
 import React from 'react'
 
 const Dashboard: React.FC = () => {
+  const competitionData = [
+    { name: 'Competition 1', count: 150 },
+    { name: 'Competition 2', count: 200 },
+    { name: 'Competition 3', count: 250 },
+  ]
+
+  const subjectData = [
+    { name: 'Subject 1', count: 100 },
+    { name: 'Subject 2', count: 150 },
+    { name: 'Subject 3', count: 50 },
+  ]
+
+  const chartColor = 'rgb(220, 38, 38)'
+
   return (
-    <div className="grid grid-cols-3 gap-3 h-36 p-3 w-full">
-      <div className="bg-red-100 gap-2 p-2 shadow justify-center items-center w-full flex flex-col rounded">
-        <p className="text-2xl font-bold">Competition</p>
-        <p className="text-3xl font-bold">534</p>
+    <div className="flex flex-col gap-1 w-full">
+      <div className="flex items-center w-full gap-1">
+        <div className="h-[42.4vh] w-full bg-white p-4 shadow">
+          <div className="chart-header text-center font-bold">Competitions Bar Chart</div>
+          <BarChart
+            series={[
+              {
+                label: 'Competitions',
+                data: competitionData.map((item) => item.count),
+                color: chartColor,
+              },
+            ]}
+            xAxis={[{ data: competitionData.map((item) => item.name), scaleType: 'band' }]}
+          />
+        </div>
+        <div className="h-[42.4vh] w-full bg-white p-4 shadow">
+          <div className="chart-header text-center font-bold">Subjects Line Chart</div>
+          <LineChart
+            series={[
+              { label: 'Subjects', data: subjectData.map((item) => item.count), color: chartColor },
+            ]}
+            xAxis={[{ data: subjectData.map((item) => item.name), scaleType: 'band' }]}
+          />
+        </div>
       </div>
-      <div className="bg-red-100 gap-2 p-2 shadow justify-center items-center w-full flex flex-col rounded">
-        <p className="text-2xl font-bold">Subject</p>
-        <p className="text-3xl font-bold">343</p>
-      </div>
-      <div className="bg-red-100 gap-2 p-2 shadow justify-center items-center w-full flex flex-col rounded">
-        <p className="text-2xl font-bold">Quiz</p>
-        <p className="text-3xl font-bold">103</p>
+      <div className="flex items-center w-full gap-1">
+        <div className="h-[42.4vh] w-full bg-white p-4 shadow">
+          <div className="chart-header text-center font-bold">Subjects Line Chart</div>
+          <LineChart
+            series={[
+              { label: 'Subjects', data: subjectData.map((item) => item.count), color: chartColor },
+            ]}
+            xAxis={[{ data: subjectData.map((item) => item.name), scaleType: 'band' }]}
+          />
+        </div>
+
+        <div className="h-[42.4vh] w-full bg-white p-4 shadow">
+          <div className="chart-header text-center font-bold">Competitions Bar Chart</div>
+          <BarChart
+            series={[
+              {
+                label: 'Competitions',
+                data: competitionData.map((item) => item.count),
+                color: chartColor,
+              },
+            ]}
+            xAxis={[{ data: competitionData.map((item) => item.name), scaleType: 'band' }]}
+          />
+        </div>
       </div>
     </div>
   )

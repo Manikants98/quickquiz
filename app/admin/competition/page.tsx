@@ -28,18 +28,18 @@ interface Subject {
 const SubjectPage: React.FC = () => {
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [competitions, setCompetitions] = useState<{ _id: string; name: string }[]>([])
-  const [loading, setLoading] = useState(true) // Add loading state
+  const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState(false)
   const [isEdit, setIsEdit] = useState(false)
   const [currentSubjectId, setCurrentSubjectId] = useState<string | null>(null)
 
   const fetchSubjects = async () => {
-    setLoading(true) // Set loading to true before fetching data
+    setLoading(true)
     try {
       const res = await axios.get('/api/subject')
       setSubjects(res.data)
     } finally {
-      setLoading(false) // Set loading to false after fetching data
+      setLoading(false)
     }
   }
 
@@ -88,7 +88,7 @@ const SubjectPage: React.FC = () => {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-white">
       <div className="flex justify-between items-center p-3">
         <h1 className="text-xl font-semibold">Subjects</h1>
         <Button

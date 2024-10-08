@@ -18,9 +18,9 @@ const ErrorPage: React.FC<ErrorProps> = ({ error, reset }) => {
   }, [router])
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen text-center">
+    <div className="flex flex-col items-center p-5 justify-center min-h-screen text-center">
       <h1 className="text-2xl font-bold">Something went wrong!</h1>
-      <p className="mt-4 text-lg">Error: {error.message}</p>
+      <p className="mt-4 p-10 text-lg">Error: {error.message}</p>
       <button onClick={reset} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">
         Try Again
       </button>

@@ -135,7 +135,7 @@ const QuizPage: React.FC = () => {
   })
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-white">
       <div className="flex justify-between items-center p-3">
         <h1 className="text-xl font-semibold">Quizzes</h1>
         <Button
@@ -157,7 +157,6 @@ const QuizPage: React.FC = () => {
           </TableHead>
           <TableBody>
             {loading ? (
-              // Skeleton Loader
               <>
                 {[1, 2, 3].map((_, idx) => (
                   <TableRow key={idx}>
@@ -210,16 +209,20 @@ const QuizPage: React.FC = () => {
         </Table>
       </TableContainer>
 
-      {/* Answers Dialog */}
       <Dialog
         open={answersDialogOpen}
         onClose={() => setAnswersDialogOpen(false)}
         className="flex flex-col"
         PaperProps={{ className: 'w-96' }}
       >
-        <div className="p-4">
-          <h2 className="text-lg font-semibold">Quiz Answers</h2>
-          <Divider className="my-2" />
+        <div className="flex items-center justify-between p-2">
+          <p>Quiz Answers</p>
+          <IconButton onClick={() => setAnswersDialogOpen(false)}>
+            <Close />
+          </IconButton>
+        </div>
+        <Divider className="!my-0" />
+        <div className="px-4 py-2">
           {selectedAnswers.map((answer, idx) => (
             <div
               key={answer.id}
@@ -230,14 +233,8 @@ const QuizPage: React.FC = () => {
             </div>
           ))}
         </div>
-        <div className="flex justify-end p-2">
-          <Button onClick={() => setAnswersDialogOpen(false)} variant="contained">
-            Close
-          </Button>
-        </div>
       </Dialog>
 
-      {/* Create/Edit Quiz Dialog */}
       <Dialog open={open} className="flex flex-col" PaperProps={{ className: 'w-96' }}>
         <form onSubmit={formik.handleSubmit}>
           <div className="flex items-center justify-between p-2">

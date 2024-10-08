@@ -13,11 +13,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <ThemeProvider theme={theme}>
       <div className="p-[1vh] h-screen flex bg-red-100 flex-col">
-        <div className="flex gap-1 h-full">
+        <div className="flex gap-1 w-full h-full">
           <Sidebar />
-          <div className="flex gap-1 flex-col rounded shadow h-full w-4/5">
+          <div className="flex gap-1 flex-col rounded w-full h-full">
             <Header />
-            <div className="flex overflow-y-auto bg-white h-[87vh] w-full">{children}</div>
+            <div style={{ width: '100%' }} className="flex overflow-y-auto h-[87vh] w-full">
+              {children}
+            </div>
           </div>
         </div>
       </div>

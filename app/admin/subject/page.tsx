@@ -81,7 +81,7 @@ const SubjectPage: React.FC = () => {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-white">
       <div className="flex justify-between items-center p-3">
         <h1 className="text-xl font-semibold">Subjects</h1>
         <Button
