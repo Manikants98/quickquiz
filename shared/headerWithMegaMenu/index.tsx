@@ -1,6 +1,6 @@
 'use client'
 
-import { AppBar, Button, Grid, Menu, MenuItem, Toolbar, Typography } from '@mui/material'
+import { Button, Menu, MenuItem } from '@mui/material'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -92,7 +92,7 @@ const HeaderWithMegaMenu: React.FC = () => {
             {menuItems?.map((item) => (
               <MenuItem
                 sx={{ width: '320px' }}
-                className="cursor-pointer !w-72 hover:text-red-600 text-gray-800 text-lg"
+                className="cursor-pointer !w-72 hover:text-red-600 text-gray-800"
                 onClick={handleCloseMenu}
               >
                 {item.title}
