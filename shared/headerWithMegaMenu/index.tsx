@@ -42,7 +42,10 @@ const HeaderWithMegaMenu: React.FC = () => {
 
   return (
     <div className="bg-white shadow-lg">
-      <div className="container mx-auto flex justify-between items-center">
+      <div
+        style={{ padding: '0 3%' }}
+        className="!px-[10%] mx-auto gap-3 flex justify-between items-center"
+      >
         <Link
           href="#"
           style={{ height: '11vh', fontWeight: 800, fontSize: '30px', color: 'black' }}
@@ -64,7 +67,7 @@ const HeaderWithMegaMenu: React.FC = () => {
           uiz™
         </Link>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center gap-2 space-x-4">
           {Object.keys(megaMenuItems).map((menuTitle, idx) => (
             <Button
               key={idx}
@@ -97,7 +100,7 @@ const HeaderWithMegaMenu: React.FC = () => {
             ))}
           </Menu>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center" style={{ gap: '12px' }}>
             <Button
               variant="outlined"
               color="primary"
