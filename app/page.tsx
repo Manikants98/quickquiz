@@ -1,101 +1,146 @@
-import Image from 'next/image'
+'use client'
 
-export default function Home() {
+import HeaderWithMegaMenu from '@/shared/headerWithMegaMenu'
+import { createTheme, ThemeProvider } from '@mui/material'
+import { useRouter } from 'next/navigation'
+
+const competitions = [
+  { name: 'IAS', description: 'Prepare for the prestigious Indian Administrative Service.' },
+  { name: 'PCS', description: 'Crack the Provincial Civil Services with confidence.' },
+  { name: 'CBSE', description: 'Master CBSE curriculum with detailed quiz practice.' },
+]
+
+const features = [
+  {
+    title: 'Expert Curated Questions',
+    description: 'Get access to questions curated by experts in each domain.',
+  },
+  {
+    title: 'Real-time Performance Tracking',
+    description: 'Monitor your progress and improve with real-time analytics.',
+  },
+  {
+    title: 'Multiple Competitions',
+    description: 'Choose from various exams like IAS, PCS, CBSE, and more.',
+  },
+]
+
+const testimonials = [
+  {
+    name: 'Amit Sharma',
+    feedback:
+      'This platform helped me tremendously in my IAS preparation. The quizzes were spot on!',
+  },
+  {
+    name: 'Priya Verma',
+    feedback: 'I could track my performance easily, which improved my scores for CBSE exams.',
+  },
+  {
+    name: 'Rahul Singh',
+    feedback: 'PCS quiz sets were challenging and exactly what I needed. Highly recommended!',
+  },
+]
+
+const LandingPage: React.FC = () => {
+  const router = useRouter()
+
+  const handleCompetitionClick = (competition: string) => {
+    router.push(`/quiz/${competition.toLowerCase()}`)
+  }
+  const theme = createTheme({
+    palette: {
+      primary: { main: 'rgba(239, 68, 68, 1)' },
+    },
+  })
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{' '}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <ThemeProvider theme={theme}>
+      <HeaderWithMegaMenu />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <header className="bg-red-600 w-full text-white py-20 text-center">
+        <h1 className="text-5xl font-bold">Welcome to QuickQuiz</h1>
+        <p className="mt-4 text-xl">
+          Prepare for IAS, PCS, CBSE, and more with curated quiz practice!
+        </p>
+        <button
+          className="mt-8 bg-white text-red-600 px-8 py-3 text-lg font-semibold rounded hover:bg-gray-200"
+          onClick={() => router.push('/quiz')}
+        >
+          Get Started
+        </button>
+      </header>
+
+      <section className="my-16 px-4">
+        <h2 className="text-4xl font-bold text-center text-gray-800 mb-8">
+          Choose Your Competition
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          {competitions.map((competition, index) => (
+            <div
+              key={index}
+              className="shadow-lg p-6 rounded-lg bg-white hover:shadow-2xl transition duration-300"
+            >
+              <h3 className="text-xl font-semibold text-center">{competition.name}</h3>
+              <p className="text-center text-gray-700 mt-4">{competition.description}</p>
+              <button
+                className="mt-6 w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700"
+                onClick={() => handleCompetitionClick(competition.name)}
+              >
+                Start Quiz
+              </button>
+            </div>
+          ))}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+      </section>
+
+      <section className="bg-gray-100 py-16 w-full">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-4xl font-bold text-center text-gray-800 mb-12">
+            Why Choose QuickQuiz?
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <div key={index} className="shadow-lg p-6 bg-white rounded-lg">
+                <h3 className="text-2xl font-semibold text-gray-800 mb-4">{feature.title}</h3>
+                <p className="text-gray-600">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-4xl font-bold text-center text-gray-800 mb-12">What Our Users Say</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className="shadow-lg p-6 bg-white rounded-lg">
+                <p className="italic text-gray-600">"{testimonial.feedback}"</p>
+                <p className="mt-4 text-lg font-bold text-gray-800">- {testimonial.name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-red-600 w-full py-16 text-white text-center">
+        <h2 className="text-4xl font-bold mb-6">Ready to Ace Your Next Exam?</h2>
+        <p className="text-xl mb-8">
+          Join thousands of students who are already improving their performance!
+        </p>
+        <button
+          className="bg-white text-red-600 px-8 py-3 text-lg font-semibold rounded hover:bg-gray-200"
+          onClick={() => router.push('/quiz')}
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+          Start Your Quiz Now
+        </button>
+      </section>
+
+      <footer className="w-full bg-gray-800 py-8 text-white text-center">
+        <p>&copy; {new Date().getFullYear()} QuickQuiz. All rights reserved.</p>
       </footer>
-    </div>
+    </ThemeProvider>
   )
 }
+
+export default LandingPage
